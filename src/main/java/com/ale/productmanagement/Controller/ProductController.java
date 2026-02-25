@@ -31,8 +31,9 @@ public class ProductController {
 
 
     @PutMapping("/inventory/{id}")
-    public String updateProductStock(){
-        return "redirect:/products";
+    public ResponseEntity<Void> updateProductStock(@PathVariable Long id, @RequestParam int stock) {
+        productService.updateProductStock(id, stock);
+        return ResponseEntity.ok().build();
     }
 
 

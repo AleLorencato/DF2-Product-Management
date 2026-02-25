@@ -20,25 +20,43 @@ public class ProductService {
     }
 
     public void saveProduct(ProductDTO productDTO){
-        ProductDTO catalogResponse = catalogClient.createProduct(productDTO);
+        ProductDTO catalogRequest = new ProductDTO();
+        catalogRequest.setName(productDTO.getName());
+        catalogRequest.setDescription(productDTO.getDescription());
+        catalogRequest.setPrice(productDTO.getPrice());
+
+        ProductDTO catalogResponse = catalogClient.createProduct(catalogRequest);
 
         Product product = new Product();
         product.setName(catalogResponse.getName());
         product.setDescription(catalogResponse.getDescription());
         product.setPrice(catalogResponse.getPrice());
-        product.setStock(0);
-        product.setStatus(true);
+        product.setStock(productDTO.getStock());
+        product.setStatus(productDTO.getStock() > 0);
 
         productRepository.save(product);
     }
 
     public void updateProductStock(Long id, int stock){
-        return;
+        ProductDTO catalogResponse = catalogClient.getProductById(id);
+        Product product = new Product(catalogResponse.getId(), catalogResponse.getName(), catalogResponse.getDescription(), catalogResponse.getPrice());
+        product.setStock(stock);
+        product.setStatus(true);
+        productRepository.save(product);
+
     }
 
     public List<ProductDTO> getAllProducts(){
-        return catalogClient.getAllProducts();
-
+        return productRepository.findAll().stream().map(product -> {
+            ProductDTO dto = new ProductDTO();
+            dto.setId(product.getId());
+            dto.setName(product.getName());
+            dto.setDescription(product.getDescription());
+            dto.setPrice(product.getPrice());
+            dto.setStock(product.getStock());
+            dto.setStatus(product.isStatus());
+            return dto;
+        }).toList();
     }
 
 

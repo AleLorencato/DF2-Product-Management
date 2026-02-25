@@ -32,7 +32,7 @@ public class ProductDTO {
         this.stock = stock;
     }
 
-    public boolean isStatus() {
+    public boolean getStatus() {
         return status;
     }
 
